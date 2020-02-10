@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: "",
+  password: "June199$",
   database: 'employee_DB'
 });
 
@@ -18,6 +18,8 @@ connection.connect((err) => {
   if (err) {
     throw err
   }
+  console.log(`\n \n Connected on thread: ${connection.threadId}`);
+  startPrompts();
 });
 
 function startPrompts() {
@@ -106,7 +108,20 @@ function addEmployee() {
     })
 }
 
-startPrompts()
+function addDepartment() {
+  inquirer
+    .prompt({
+      name: 'addDepartment',
+      type: 'input',
+      message: 'What department would you like to add?'
+    })
+    .then((answer)=> {
+
+      startPrompts();
+    })
+}
+
+
 
 
 

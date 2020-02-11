@@ -100,13 +100,26 @@ function addEmployee() {
         name: 'employeeManager',
         type: 'input',
         message: "Who is the employee's manager?"
+        // how do I get the existing managers? 
       }
     ])
-    .then((answer) => {
-
+    .then(function({ firstName, lastName, employeeRole }) {
+      connection.query('INSERT INTO employee SET ?', 
+      {
+        first_name: firstName,
+        last_name: lastName
+      },
+      function(err) {
+        if (err) {
+          throw err
+        }
+        console.log('Your employee was created successfully!')
+      });
       startPrompts()
     })
 }
+
+
 
 function addDepartment() {
   inquirer

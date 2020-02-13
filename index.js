@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: "June199$",
+  password: "",
   database: 'employee_DB'
 });
 
@@ -21,6 +21,7 @@ connection.connect((err) => {
   if (err) {
     throw err
   }
+  // Logs to the console the CPU thread
   console.log(`\n \n Connected on thread: ${connection.threadId}`);
   startPrompts();
 });
@@ -96,30 +97,31 @@ function addEmployee() {
             name: 'lastName',
             type: 'input',
             message: "What is the employee's last name?"
+          },
+          {
+            name: 'employeeRole',
+            type: 'list',
+            message: "What is the employee's role?",
+            // Creates a new array that returns the array of role title's
+            choices: result.map(role => role.title)
+          },
+          {
+            name: 'employeeManager',
+            type: 'list',
+            message: "Who is the employee's manager?",
+            // Creates a new array that returns the employee list with first and last names
+            choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
           }
-          // {
-          //   name: 'employeeRole',
-          //   type: 'list',
-          //   message: "What is the employee's role?",
-          //   // creates a new array that returns the array of role title's
-          //   choices: result.map(role => role.title)
-          // }
-          // {
-          //   name: 'employeeManager',
-          //   type: 'list',
-          //   message: "Who is the employee's manager?",
-          //   choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
-          // }
         ])
-        .then(({ firstName, lastName, employeeRole }) => {
+        .then(({ firstName, lastName, employeeRole, employeeManager }) => {
           findRoleId = result.find(role => role.title == employeeRole)
 
           connection.query('INSERT INTO employee SET ?', 
           {
             first_name: firstName,
-            last_name: lastName
-            // role_id: findRoleId
-            // manager_id: employeeManager
+            last_name: lastName,
+            role_id: findRoleId,
+            manager_id: employeeManager
           },
           function(err) {
             if (err) {
@@ -155,6 +157,13 @@ function addDepartment() {
       });
     });
 };
+
+function addRole() {
+  inquirer
+    .prompt({
+      
+    })
+}
 
 function viewEmployees() {
   // Selects all of the columns from the employee table

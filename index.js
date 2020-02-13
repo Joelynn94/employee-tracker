@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const express = require('express');
 
-// Sets up the 
+// Sets up Express with a port and ability to use express
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -104,14 +104,14 @@ function addEmployee() {
             message: "What is the employee's role?",
             // Creates a new array that returns the array of role title's
             choices: result.map(role => role.title)
-          },
-          {
-            name: 'employeeManager',
-            type: 'list',
-            message: "Who is the employee's manager?",
-            // Creates a new array that returns the employee list with first and last names
-            choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
           }
+          // {
+          //   name: 'employeeManager',
+          //   type: 'list',
+          //   message: "Who is the employee's manager?",
+          //   // Creates a new array that returns the employee list with first and last names
+          //   choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
+          // }
         ])
         .then(({ firstName, lastName, employeeRole, employeeManager }) => {
           findRoleId = result.find(role => role.title == employeeRole)
@@ -145,7 +145,13 @@ function addDepartment() {
     })
     .then(({ addDepartment })=> {
       // Inserts what the user entered - into the department table as a new department 
-      connection.query('INSERT INTO department SET ?', { department_name: addDepartment });
+      connection.query('INSERT INTO department SET ?', 
+      {
+        department_name: addDepartment
+      },
+      // Logs a success message to the user in the console 
+      console.log(`\n Success! You added a new department: ${addDepartment}`)
+      );
       // Selects all of the columns for the department table
       connection.query('SELECT * FROM department', function(err, result) {
         // if there is an error, throw the error 
@@ -159,9 +165,56 @@ function addDepartment() {
 };
 
 function addRole() {
-  inquirer
-    .prompt({
-      
+  connection.query('SELECT * FROM department', function(err, result){
+    if(err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          name: 'roleTitle',
+          type: 'input',
+          message: 'What is the job title you would like to add?'
+        },
+        {
+          name: 'roleSalary',
+          type: 'input',
+          message: 'What is the salary of the job you are adding? (must be number)',
+          // Validates that the user enters a number and returns and error if the input is not valid
+          validate: function(salary) {
+            if (isNaN(salary) === false){
+              return true;
+            }
+            return 'Please enter a valid number';
+          }
+        },
+        {
+          name: 'roleID',
+          type: 'rawlist',
+          //??? //??? // how do I get a number back instead of text??? 
+          choices: result.map(id => id.department_name)
+        }
+      ])
+      .then(({ roleTitle, roleSalary, roleID }) => {
+        // Inserts what the user entered - into the role table as a new role
+        connection.query('INSERT INTO role SET ?', 
+        { 
+          title: roleTitle, 
+          salary: roleSalary,
+          department_id: roleID
+        },
+        // Logs a success message to the user in the console 
+        console.log(`\n Success! You added a new job title: ${roleTitle}, \n With a salary of ${roleSalary}`)
+        );
+        // Selects all of the columns in the SQL role table 
+        connection.query('SELECT * FROM role', function(err, result){
+          // If there is an error, throw the err
+          if(err) throw err;
+          // Prints out the SQL role table in the console
+          console.table(result);
+          // Starts the user prompts
+          startPrompts();
+        });
+      })
     })
 }
 
@@ -203,7 +256,7 @@ function viewRoles() {
   })
 }
 
-
+// App listening on a port and logs to the console
 app.listen(PORT, () => {
   console.log(`Server is listening on: http://localhost${PORT}`);
 });

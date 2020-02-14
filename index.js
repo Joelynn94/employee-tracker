@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: "June199$",
+  password: "$",
   database: 'employee_DB'
 });
 
@@ -111,31 +111,36 @@ function addEmployee() {
         ])
         .then(({ firstName, lastName, employeeRole }) => {
 
+          // Create a variable to use as the role_id
           let roleID;
+          // Loop over the results, if the role title that is selected is equal to an existing role ID (using the employeeRole answer) then assign the variable roleID to the actual role id and run the SQL query
           result.map(finds => {
             if(finds.title === employeeRole) {
               roleID = finds.id;
-
+              // Inserts what the user entered - into the employee table as a new employee
               connection.query('INSERT INTO employee SET ?', 
               {
                 first_name: firstName,
                 last_name: lastName,
                 role_id: roleID
               },
-              function(err) {
-                if (err) {
-                  throw err
-                }
-                console.log('Your employee was created successfully!')
-                startPrompts()
+              // Logs a success message to the user in the console 
+              console.log('Your employee was created successfully!')
+              );
+              // Selects all of the columns for the department table
+              connection.query('SELECT * FROM employee', function(err, result) {
+                // if there is an error, throw the error 
+                if(err) throw err;
+                // Prints out the sql table in the console
+                console.table(result);
+                // Starts the user prompts
+                startPrompts();
               });
-            }
+            };
           });
         });
     });
 }
-
-
 
 function addDepartment() {
   inquirer
@@ -197,7 +202,7 @@ function addRole() {
       ])
       .then(({ roleTitle, roleSalary, roleID }) => {
 
-        // Create a variable to use as the id number 
+        // Create a variable to use as the department_id number 
         let deptID;
         // Loop over the results, if the deptartment_name that is selected is equal to an existing department ID (using roleID answer) then assign the variable deptID to the actual department id and run the SQL query
         result.map(finds => {

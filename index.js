@@ -104,14 +104,14 @@ function addEmployee() {
             message: "What is the employee's role?",
             // Creates a new array that returns the array of role title's
             choices: result.map(role => role.title)
+          },
+          {
+            name: 'employeeManager',
+            type: 'list',
+            message: "Who is the employee's manager?",
+            // Creates a new array that returns the employee list with first and last names
+            choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
           }
-          // {
-          //   name: 'employeeManager',
-          //   type: 'list',
-          //   message: "Who is the employee's manager?",
-          //   // Creates a new array that returns the employee list with first and last names
-          //   choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
-          // }
         ])
         .then(({ firstName, lastName, employeeRole, employeeManager }) => {
           findRoleId = result.find(role => role.title == employeeRole)
@@ -190,8 +190,8 @@ function addRole() {
         {
           name: 'roleID',
           type: 'rawlist',
-          //??? //??? // how do I get a number back instead of text??? 
-          choices: result.map(id => id.department_name)
+          //??? //??? // how do I get get a new id instead of a list of ids that already exist??? 
+          choices: result.map(department => department.name)
         }
       ])
       .then(({ roleTitle, roleSalary, roleID }) => {
@@ -224,7 +224,7 @@ function viewEmployees() {
     // if there is an error, throw the error
     if(err) throw err;
     // prints the current amount of employees
-    console.log('There are: ' + res.length + ' total employees');
+    console.log('There are: ' + result.length + ' total employees');
     // Prints out the SQL employee table in the console
     console.table(result);
     // Starts the user prompts

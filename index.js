@@ -190,21 +190,32 @@ function addRole() {
         {
           name: 'roleID',
           type: 'rawlist',
-          //??? //??? // how do I get get a new id instead of a list of ids that already exist??? 
-          choices: result.map(department => department.name)
+          // Loops over the results, runs a function on every department name in the SQL column
+          choices: result.map(department => department.department_name)
         }
       ])
       .then(({ roleTitle, roleSalary, roleID }) => {
-        // Inserts what the user entered - into the role table as a new role
-        connection.query('INSERT INTO role SET ?', 
-        { 
-          title: roleTitle, 
-          salary: roleSalary,
-          department_id: roleID
-        },
-        // Logs a success message to the user in the console 
-        console.log(`\n Success! You added a new job title: ${roleTitle}, \n With a salary of ${roleSalary}`)
-        );
+
+        // Create a variable to use as the id number 
+        let deptID;
+        // Loop over the results, if the deptartment_name that is selected is equal to an existing department ID (using roleID answer) then assign the variable deptID to the actual department id and run the SQL query
+        result.map(finds => {
+          if(finds.department_name === roleID) {
+            deptID = finds.id;
+
+            // Inserts what the user entered - into the role table as a new role
+            connection.query('INSERT INTO role SET ?', 
+            { 
+              title: roleTitle, 
+              salary: roleSalary,
+              department_id: deptID
+            },
+            // Logs a success message to the user in the console 
+            console.log(`\n Success! You added a new job title: ${roleTitle}, \n With a salary of ${roleSalary}`)
+            );
+          }
+        })
+
         // Selects all of the columns in the SQL role table 
         connection.query('SELECT * FROM role', function(err, result){
           // If there is an error, throw the err

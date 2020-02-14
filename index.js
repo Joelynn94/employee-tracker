@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: "",
+  password: "June199$",
   database: 'employee_DB'
 });
 
@@ -82,10 +82,6 @@ function addEmployee() {
   connection.query('SELECT * FROM role', function(err, result){
     if (err) throw err;
 
-    connection.query(`SELECT employee.first_name, employee.last_name, employee.id, role.title
-                      FROM role
-                      INNER JOIN employee ON role.id = employee.role_id`, function(err, managerResult){
-                        if (err) throw err;
       inquirer
         .prompt([
           {
@@ -104,36 +100,41 @@ function addEmployee() {
             message: "What is the employee's role?",
             // Creates a new array that returns the array of role title's
             choices: result.map(role => role.title)
-          },
-          {
-            name: 'employeeManager',
-            type: 'list',
-            message: "Who is the employee's manager?",
-            // Creates a new array that returns the employee list with first and last names
-            choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
           }
+          // {
+          //   name: 'employeeManager',
+          //   type: 'list',
+          //   message: "Who is the employee's manager?",
+          //   // Creates a new array that returns the employee list with first and last names
+          //   choices: managerResult.map(manager => manager.first_name + ' ' + manager.last_name)
+          // }
         ])
-        .then(({ firstName, lastName, employeeRole, employeeManager }) => {
-          findRoleId = result.find(role => role.title == employeeRole)
+        .then(({ firstName, lastName, employeeRole }) => {
 
-          connection.query('INSERT INTO employee SET ?', 
-          {
-            first_name: firstName,
-            last_name: lastName,
-            role_id: findRoleId,
-            manager_id: employeeManager
-          },
-          function(err) {
-            if (err) {
-              throw err
+          let roleID;
+          result.map(finds => {
+            if(finds.title === employeeRole) {
+              roleID = finds.id;
+
+              connection.query('INSERT INTO employee SET ?', 
+              {
+                first_name: firstName,
+                last_name: lastName,
+                role_id: roleID
+              },
+              function(err) {
+                if (err) {
+                  throw err
+                }
+                console.log('Your employee was created successfully!')
+                startPrompts()
+              });
             }
-            console.log('Your employee was created successfully!')
-            startPrompts()
           });
         });
-      })
-  });
+    });
 }
+
 
 
 function addDepartment() {

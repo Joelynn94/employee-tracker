@@ -1,18 +1,13 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const express = require('express');
-
-// Sets up Express with a port and ability to use express
-const PORT = process.env.PORT || 3000;
-const app = express();
 
 // Create the connection to mysql database
 const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: "$",
+  password: "root",
   database: 'employee_DB'
 });
 
@@ -272,11 +267,6 @@ function viewRoles() {
     startPrompts();
   })
 }
-
-// App listening on a port and logs to the console
-app.listen(PORT, () => {
-  console.log(`Server is listening on: http://localhost${PORT}`);
-});
 
 
 

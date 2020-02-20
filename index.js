@@ -268,5 +268,30 @@ function viewRoles() {
   })
 }
 
+function updateEmployeeRole() {
+  connection.query('SELECT id, first_name, last_name FROM employee', function(err, result){
+    if(err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          name: 'employeeID',
+          type: 'rawlist',
+          message: 'Which employee role would you like to update?',
+          // Loops over the results, runs a function on every department name in the SQL column
+          choices: result.map(name => `${name.first_name} ${name.last_name}`)
+        },
+        {
+          name: 'employeeRole',
+          type: 'list',
+          message: "What is the employee's role?",
+          // Creates a new array that returns the array of role title's
+          choices: result.map(role => role.title)
+        }
+      ]).then(({ employeeID, lastName }) => {
+        console.log(employeeID);
+      })
+  })
+}
 
 
